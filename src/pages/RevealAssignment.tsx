@@ -8,6 +8,7 @@ import { findParticipantByKey, Participant, Room } from '@/lib/secretSanta';
 import { ArrowLeft, Gift, Hash, Sparkles, Gamepad2, Eraser } from 'lucide-react';
 import { ScratchReveal } from '@/components/ScratchReveal';
 import { SlotReveal } from '@/components/SlotReveal';
+import { SoundManager } from '@/lib/SoundManager';
 
 type RevealMode = 'simple' | 'scratch' | 'slot';
 
@@ -168,7 +169,10 @@ const RevealAssignment = () => {
                   <Button
                     size="lg"
                     className="w-full glow-animation"
-                    onClick={() => setRevealed(true)}
+                    onClick={() => {
+                      setRevealed(true);
+                      SoundManager.playWin();
+                    }}
                   >
                     <Gift className="w-5 h-5 mr-2" />
                     Reveal My Match!

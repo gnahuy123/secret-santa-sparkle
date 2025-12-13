@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { ScratchReveal } from '@/components/ScratchReveal';
 import { SlotReveal } from '@/components/SlotReveal';
+import { SoundManager } from '@/lib/SoundManager';
 
 type RevealMode = 'simple' | 'scratch' | 'slot';
 
@@ -58,6 +59,7 @@ const AdminReveal = () => {
       newRevealed.delete(giftNumber);
     } else {
       newRevealed.add(giftNumber);
+      SoundManager.playWin();
     }
     setRevealedNumbers(newRevealed);
   };
@@ -86,6 +88,7 @@ const AdminReveal = () => {
       const allNumbers = new Set(room?.participants.map(p => p.giftNumber) || []);
       setRevealedNumbers(allNumbers);
       setAllRevealed(true);
+      SoundManager.playWin();
     }
   };
 

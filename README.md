@@ -1,73 +1,54 @@
-# Welcome to your Lovable project
+# Secret Santa Sparkle 🎄✨
 
-## Project info
+A magical, interactive Secret Santa generator built with React. Create rooms, share links, and let participants reveal their matches with festive flair!
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## Features
 
-## How can I edit this code?
+-   **Festive UI**: Beautiful snowy background, holiday colors, and animations.
+-   **No Login Required**: Just create a room and share the link.
+-   **Multiple Reveal Modes**:
+    -   **Simple**: Classic instant reveal.
+    -   **Scratch Card**: Interactive "scratch-off" card to reveal the name.
+    -   **Slot Machine**: Fun spinning animation to find your match.
+    -   *All modes come with fun sound effects!* 🎵
+-   **Admin Dashboard**:
+    -   View all participants and their assignments.
+    -   Interactive reveals in the admin view (great for in-person gatherings!).
+    -   "Reveal All" button for quick results.
+-   **Responsive**: Works great on mobile and desktop.
 
-There are several ways of editing your application.
+## Tech Stack
 
-**Use Lovable**
+-   **Frontend**: React, TypeScript, Vite
+-   **Styling**: Tailwind CSS
+-   **Components**: Radix UI (via shadcn/ui)
+-   **Icons**: Lucide React
+-   **State/Data**: TanStack Query
+-   **Deployment**: Ready for Netlify/Vercel
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+## Getting Started
 
-Changes made via Lovable will be committed automatically to this repo.
+1.  **Install dependencies**:
+    ```bash
+    npm install
+    ```
 
-**Use your preferred IDE**
+2.  **Start the development server**:
+    ```bash
+    npm run dev
+    ```
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+3.  **Build for production**:
+    ```bash
+    npm run build
+    ```
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## Usage
 
-Follow these steps:
+1.  **Create a Room**: Enter your name and participant names.
+2.  **Share Links**: Send the unique link to each participant (or use the Admin Dashboard to manage it).
+3.  **Reveal**: Participants open their link and choose their favorite way to reveal their Secret Santa match!
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+---
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+Made with ❤️ by [gnahuy123](https://gnahuy123.github.io/)
