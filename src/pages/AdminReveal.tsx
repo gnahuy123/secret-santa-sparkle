@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Snowfall } from '@/components/Snowfall';
 import { FestiveCard } from '@/components/FestiveCard';
@@ -9,6 +9,7 @@ import { ArrowLeft, Gift, Eye, EyeOff, Sparkles } from 'lucide-react';
 
 const AdminReveal = () => {
   const { creatorKey } = useParams<{ creatorKey: string }>();
+  const navigate = useNavigate();
   const [room, setRoom] = useState<Room | null>(null);
   const [revealedNumbers, setRevealedNumbers] = useState<Set<number>>(new Set());
   const [allRevealed, setAllRevealed] = useState(false);
@@ -87,7 +88,7 @@ const AdminReveal = () => {
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
       <Snowfall />
-      
+
       <div className="relative z-10 container mx-auto px-4 py-8 md:py-16">
         <Link
           to="/"
@@ -103,9 +104,18 @@ const AdminReveal = () => {
             <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-2">
               Gift Reveal Dashboard
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground mb-4">
               Reveal which gift number belongs to whom
             </p>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate(`/room/${room.id}`, { state: { creatorKey } })}
+              className="gap-2"
+            >
+              <Eye className="w-4 h-4" />
+              View Access Info
+            </Button>
           </div>
 
           <FestiveCard>
@@ -134,21 +144,19 @@ const AdminReveal = () => {
                 return (
                   <div
                     key={participant.key}
-                    className={`p-4 rounded-lg border-2 transition-all duration-300 cursor-pointer ${
-                      isRevealed
+                    className={`p-4 rounded-lg border-2 transition-all duration-300 cursor-pointer ${isRevealed
                         ? 'bg-christmas-green/10 border-christmas-green/30'
                         : 'bg-muted/30 border-transparent hover:border-christmas-gold/30'
-                    }`}
+                      }`}
                     onClick={() => toggleReveal(participant.giftNumber)}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
                         <div
-                          className={`w-12 h-12 rounded-full flex items-center justify-center font-display font-bold text-lg transition-colors ${
-                            isRevealed
+                          className={`w-12 h-12 rounded-full flex items-center justify-center font-display font-bold text-lg transition-colors ${isRevealed
                               ? 'bg-christmas-green text-christmas-snow'
                               : 'bg-christmas-gold/20 text-christmas-gold'
-                          }`}
+                            }`}
                         >
                           {participant.giftNumber}
                         </div>

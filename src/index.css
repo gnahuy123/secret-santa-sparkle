@@ -87,7 +87,12 @@
     @apply bg-background text-foreground font-sans;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-display;
   }
 }
@@ -104,8 +109,15 @@
   }
 
   @keyframes shimmer {
-    0%, 100% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
+
+    0%,
+    100% {
+      background-position: 0% 50%;
+    }
+
+    50% {
+      background-position: 100% 50%;
+    }
   }
 
   @keyframes snowfall {
@@ -113,12 +125,15 @@
       transform: translateY(-10px) rotate(0deg);
       opacity: 0;
     }
+
     10% {
       opacity: 1;
     }
+
     90% {
       opacity: 1;
     }
+
     100% {
       transform: translateY(100vh) rotate(360deg);
       opacity: 0;
@@ -128,16 +143,23 @@
   .snowflake {
     position: fixed;
     top: -10px;
-    color: hsl(var(--christmas-snow));
-    text-shadow: 0 0 5px rgba(255,255,255,0.8);
+    color: hsl(var(--christmas-snow) / 0.9);
+    text-shadow: 0 0 4px rgba(0, 0, 0, 0.25);
     pointer-events: none;
     z-index: 1;
     animation: snowfall linear infinite;
   }
 
   @keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
+
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+
+    50% {
+      transform: translateY(-10px);
+    }
   }
 
   .float-animation {
@@ -145,8 +167,15 @@
   }
 
   @keyframes pulse-glow {
-    0%, 100% { box-shadow: 0 0 20px hsl(var(--christmas-gold) / 0.3); }
-    50% { box-shadow: 0 0 40px hsl(var(--christmas-gold) / 0.6); }
+
+    0%,
+    100% {
+      box-shadow: 0 0 20px hsl(var(--christmas-gold) / 0.3);
+    }
+
+    50% {
+      box-shadow: 0 0 40px hsl(var(--christmas-gold) / 0.6);
+    }
   }
 
   .glow-animation {

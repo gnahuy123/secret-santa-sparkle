@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,8 +12,29 @@ import { useToast } from '@/hooks/use-toast';
 const CreateRoom = () => {
   const [names, setNames] = useState<string[]>(['', '']);
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingMsg, setLoadingMsg] = useState('Preparing sleigh...');
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (isLoading) {
+      const messages = [
+        'Checking the list twice...',
+        'Wrapping virtual gifts...',
+        'Feeding the reindeer...',
+        'Mixing hot cocoa...',
+        'Polishing sleigh bells...'
+      ];
+      let i = 0;
+      setLoadingMsg(messages[0]);
+      interval = setInterval(() => {
+        i = (i + 1) % messages.length;
+        setLoadingMsg(messages[i]);
+      }, 2000);
+    }
+    return () => clearInterval(interval);
+  }, [isLoading]);
 
   const addName = () => {
     if (names.length >= 30) {
@@ -47,9 +68,9 @@ const CreateRoom = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const validNames = names.filter(n => n.trim());
-    
+
     if (validNames.length < 2) {
       toast({
         title: "Not enough participants",
@@ -87,8 +108,25 @@ const CreateRoom = () => {
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
       <Snowfall />
-      
+
       <div className="relative z-10 container mx-auto px-4 py-8 md:py-16">
+        {/* Loading Overlay */}
+        {isLoading && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+            <div className="text-center p-8 bg-card border shadow-lg rounded-xl max-w-sm w-full mx-4">
+              <div className="w-20 h-20 mx-auto mb-6 bg-christmas-green/10 rounded-full flex items-center justify-center animate-bounce">
+                <GiftIcon size="lg" className="text-christmas-green" />
+              </div>
+              <h2 className="font-display text-2xl font-bold mb-2 animate-pulse text-foreground">
+                Creating Magic...
+              </h2>
+              <p className="text-muted-foreground">
+                {loadingMsg}
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Back button */}
         <Link
           to="/"
@@ -99,6 +137,7 @@ const CreateRoom = () => {
         </Link>
 
         <div className="max-w-xl mx-auto">
+          {/* ... existing content ... */}
           <div className="text-center mb-8">
             <GiftIcon size="md" className="mx-auto mb-4" />
             <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-2">
