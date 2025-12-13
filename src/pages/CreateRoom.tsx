@@ -5,12 +5,13 @@ import { Input } from '@/components/ui/input';
 import { Snowfall } from '@/components/Snowfall';
 import { FestiveCard } from '@/components/FestiveCard';
 import { GiftIcon } from '@/components/GiftIcon';
-import { createRoom, saveRoom } from '@/lib/secretSanta';
-import { Plus, X, ArrowLeft, Sparkles } from 'lucide-react';
+import { createRoom } from '@/lib/secretSanta';
+import { Plus, X, ArrowLeft, Sparkles, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const CreateRoom = () => {
   const [names, setNames] = useState<string[]>(['', '']);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -44,7 +45,7 @@ const CreateRoom = () => {
     setNames(newNames);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     const validNames = names.filter(n => n.trim());
@@ -68,10 +69,19 @@ const CreateRoom = () => {
       return;
     }
 
-    const room = createRoom(validNames.map(n => n.trim()));
-    saveRoom(room);
-    
-    navigate(`/room/${room.id}`, { state: { creatorKey: room.creatorKey } });
+    setIsLoading(true);
+    try {
+      const room = await createRoom(validNames.map(n => n.trim()));
+      navigate(`/room/${room.id}`, { state: { creatorKey: room.creatorKey } });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to create room. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -139,9 +149,13 @@ const CreateRoom = () => {
                   Add Participant ({names.length}/30)
                 </Button>
 
-                <Button type="submit" size="lg" className="w-full">
-                  <Sparkles className="w-5 h-5 mr-2" />
-                  Create Secret Santa Room
+                <Button type="submit" size="lg" className="w-full" disabled={isLoading}>
+                  {isLoading ? (
+                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                  ) : (
+                    <Sparkles className="w-5 h-5 mr-2" />
+                  )}
+                  {isLoading ? 'Creating...' : 'Create Secret Santa Room'}
                 </Button>
               </div>
             </form>

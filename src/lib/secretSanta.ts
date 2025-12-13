@@ -1,4 +1,5 @@
 import { nanoid } from 'nanoid';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface Participant {
   name: string;
@@ -39,9 +40,24 @@ function createAssignments(names: string[]): { name: string; assignedTo: string 
   }));
 }
 
-export function createRoom(names: string[]): Room {
+export async function createRoom(names: string[]): Promise<Room> {
   const assignments = createAssignments(names);
   const giftNumbers = shuffleArray([...Array(names.length)].map((_, i) => i + 1));
+  
+  const roomCode = nanoid(10);
+  const creatorKey = nanoid(12);
+  
+  // Insert room into Supabase
+  const { data: roomData, error: roomError } = await supabase
+    .from('rooms')
+    .insert({
+      room_code: roomCode,
+      creator_key: creatorKey,
+    })
+    .select()
+    .single();
+  
+  if (roomError) throw roomError;
   
   const participants: Participant[] = assignments.map((a, i) => ({
     name: a.name,
@@ -50,47 +66,127 @@ export function createRoom(names: string[]): Room {
     giftNumber: giftNumbers[i],
   }));
   
+  // Insert participants into Supabase
+  const participantsToInsert = participants.map(p => ({
+    room_id: roomData.id,
+    name: p.name,
+    participant_key: p.key,
+    assigned_to: p.assignedTo,
+    gift_number: p.giftNumber,
+  }));
+  
+  const { error: participantsError } = await supabase
+    .from('participants')
+    .insert(participantsToInsert);
+  
+  if (participantsError) throw participantsError;
+  
   return {
-    id: nanoid(10),
-    creatorKey: nanoid(12),
+    id: roomCode,
+    creatorKey,
     participants,
     createdAt: Date.now(),
   };
 }
 
-export function saveRoom(room: Room): void {
-  const rooms = getRooms();
-  rooms[room.id] = room;
-  localStorage.setItem('secretSantaRooms', JSON.stringify(rooms));
+export async function findParticipantByKey(key: string): Promise<{ room: Room; participant: Participant } | null> {
+  const { data: participantData, error: participantError } = await supabase
+    .from('participants')
+    .select(`
+      *,
+      rooms (*)
+    `)
+    .eq('participant_key', key)
+    .maybeSingle();
+  
+  if (participantError || !participantData) return null;
+  
+  const roomInfo = participantData.rooms as any;
+  
+  // Fetch all participants for this room
+  const { data: allParticipants } = await supabase
+    .from('participants')
+    .select('*')
+    .eq('room_id', roomInfo.id);
+  
+  const participants: Participant[] = (allParticipants || []).map(p => ({
+    name: p.name,
+    key: p.participant_key,
+    assignedTo: p.assigned_to,
+    giftNumber: p.gift_number,
+  }));
+  
+  const room: Room = {
+    id: roomInfo.room_code,
+    creatorKey: roomInfo.creator_key,
+    participants,
+    createdAt: new Date(roomInfo.created_at).getTime(),
+  };
+  
+  const participant: Participant = {
+    name: participantData.name,
+    key: participantData.participant_key,
+    assignedTo: participantData.assigned_to,
+    giftNumber: participantData.gift_number,
+  };
+  
+  return { room, participant };
 }
 
-export function getRooms(): Record<string, Room> {
-  const data = localStorage.getItem('secretSantaRooms');
-  return data ? JSON.parse(data) : {};
+export async function findRoomByCreatorKey(creatorKey: string): Promise<Room | null> {
+  const { data: roomData, error } = await supabase
+    .from('rooms')
+    .select('*')
+    .eq('creator_key', creatorKey)
+    .maybeSingle();
+  
+  if (error || !roomData) return null;
+  
+  const { data: participantsData } = await supabase
+    .from('participants')
+    .select('*')
+    .eq('room_id', roomData.id);
+  
+  const participants: Participant[] = (participantsData || []).map(p => ({
+    name: p.name,
+    key: p.participant_key,
+    assignedTo: p.assigned_to,
+    giftNumber: p.gift_number,
+  }));
+  
+  return {
+    id: roomData.room_code,
+    creatorKey: roomData.creator_key,
+    participants,
+    createdAt: new Date(roomData.created_at).getTime(),
+  };
 }
 
-export function findParticipantByKey(key: string): { room: Room; participant: Participant } | null {
-  const rooms = getRooms();
-  for (const room of Object.values(rooms)) {
-    const participant = room.participants.find(p => p.key === key);
-    if (participant) {
-      return { room, participant };
-    }
-  }
-  return null;
-}
-
-export function findRoomByCreatorKey(creatorKey: string): Room | null {
-  const rooms = getRooms();
-  for (const room of Object.values(rooms)) {
-    if (room.creatorKey === creatorKey) {
-      return room;
-    }
-  }
-  return null;
-}
-
-export function findRoomById(roomId: string): Room | null {
-  const rooms = getRooms();
-  return rooms[roomId] || null;
+export async function findRoomById(roomId: string): Promise<Room | null> {
+  const { data: roomData, error } = await supabase
+    .from('rooms')
+    .select('*')
+    .eq('room_code', roomId)
+    .maybeSingle();
+  
+  if (error || !roomData) return null;
+  
+  const { data: participantsData } = await supabase
+    .from('participants')
+    .select('*')
+    .eq('room_id', roomData.id);
+  
+  const participants: Participant[] = (participantsData || []).map(p => ({
+    name: p.name,
+    key: p.participant_key,
+    assignedTo: p.assigned_to,
+    giftNumber: p.gift_number,
+  }));
+  
+  return {
+    id: roomData.room_code,
+    creatorKey: roomData.creator_key,
+    participants,
+    createdAt: new Date(roomData.created_at).getTime(),
+  };
 }
