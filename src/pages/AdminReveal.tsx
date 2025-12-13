@@ -4,8 +4,18 @@ import { Button } from '@/components/ui/button';
 import { Snowfall } from '@/components/Snowfall';
 import { FestiveCard } from '@/components/FestiveCard';
 import { GiftIcon } from '@/components/GiftIcon';
-import { findRoomByCreatorKey, Room } from '@/lib/secretSanta';
-import { ArrowLeft, Gift, Eye, EyeOff, Sparkles } from 'lucide-react';
+import { findRoomByCreatorKey, Participant, Room } from '@/lib/secretSanta';
+import { ArrowLeft, Gift, Eye, EyeOff, Sparkles, Gamepad2, Eraser } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { ScratchReveal } from '@/components/ScratchReveal';
+import { SlotReveal } from '@/components/SlotReveal';
+
+type RevealMode = 'simple' | 'scratch' | 'slot';
 
 const AdminReveal = () => {
   const { creatorKey } = useParams<{ creatorKey: string }>();
@@ -14,6 +24,10 @@ const AdminReveal = () => {
   const [revealedNumbers, setRevealedNumbers] = useState<Set<number>>(new Set());
   const [allRevealed, setAllRevealed] = useState(false);
   const [notFound, setNotFound] = useState(false);
+
+  const [revealMode, setRevealMode] = useState<RevealMode>('simple');
+  const [selectedParticipant, setSelectedParticipant] = useState<Participant | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   useEffect(() => {
     const loadRoom = async () => {
@@ -29,6 +43,15 @@ const AdminReveal = () => {
     loadRoom();
   }, [creatorKey]);
 
+  const handleParticipantClick = (participant: Participant) => {
+    if (revealMode === 'simple') {
+      toggleReveal(participant.giftNumber);
+    } else {
+      setSelectedParticipant(participant);
+      setIsDialogOpen(true);
+    }
+  };
+
   const toggleReveal = (giftNumber: number) => {
     const newRevealed = new Set(revealedNumbers);
     if (newRevealed.has(giftNumber)) {
@@ -37,6 +60,22 @@ const AdminReveal = () => {
       newRevealed.add(giftNumber);
     }
     setRevealedNumbers(newRevealed);
+  };
+
+  const markAsRevealed = (giftNumber: number) => {
+    const newRevealed = new Set(revealedNumbers);
+    newRevealed.add(giftNumber);
+    setRevealedNumbers(newRevealed);
+  };
+
+  const handleModalReveal = () => {
+    if (selectedParticipant) {
+      markAsRevealed(selectedParticipant.giftNumber);
+      // Optional: Close dialog automatically after a delay? 
+      // User might want to see the result for a bit.
+      // For Slot, the result stays on screen. For Scratch, it stays on screen.
+      // We'll let user close it manually or click outside.
+    }
   };
 
   const revealAll = () => {
@@ -107,15 +146,52 @@ const AdminReveal = () => {
             <p className="text-muted-foreground mb-4">
               Reveal which gift number belongs to whom
             </p>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => navigate(`/room/${room.id}`, { state: { creatorKey } })}
-              className="gap-2"
-            >
-              <Eye className="w-4 h-4" />
-              View Access Info
-            </Button>
+
+            <div className="flex flex-col items-center gap-4">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate(`/room/${room.id}`, { state: { creatorKey } })}
+                className="gap-2"
+              >
+                <Eye className="w-4 h-4" />
+                View Access Info
+              </Button>
+
+              {/* Mode Selector */}
+              <div className="flex justify-center gap-2 bg-muted/50 p-1 rounded-lg inline-flex">
+                <button
+                  onClick={() => setRevealMode('simple')}
+                  className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${revealMode === 'simple'
+                    ? 'bg-background shadow text-foreground'
+                    : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                >
+                  <Sparkles className="w-4 h-4 inline mr-1" />
+                  Simple
+                </button>
+                <button
+                  onClick={() => setRevealMode('scratch')}
+                  className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${revealMode === 'scratch'
+                    ? 'bg-background shadow text-foreground'
+                    : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                >
+                  <Eraser className="w-4 h-4 inline mr-1" />
+                  Scratch
+                </button>
+                <button
+                  onClick={() => setRevealMode('slot')}
+                  className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${revealMode === 'slot'
+                    ? 'bg-background shadow text-foreground'
+                    : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                >
+                  <Gamepad2 className="w-4 h-4 inline mr-1" />
+                  Slot
+                </button>
+              </div>
+            </div>
           </div>
 
           <FestiveCard>
@@ -145,17 +221,17 @@ const AdminReveal = () => {
                   <div
                     key={participant.key}
                     className={`p-4 rounded-lg border-2 transition-all duration-300 cursor-pointer ${isRevealed
-                        ? 'bg-christmas-green/10 border-christmas-green/30'
-                        : 'bg-muted/30 border-transparent hover:border-christmas-gold/30'
+                      ? 'bg-christmas-green/10 border-christmas-green/30'
+                      : 'bg-muted/30 border-transparent hover:border-christmas-gold/30'
                       }`}
-                    onClick={() => toggleReveal(participant.giftNumber)}
+                    onClick={() => handleParticipantClick(participant)}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
                         <div
                           className={`w-12 h-12 rounded-full flex items-center justify-center font-display font-bold text-lg transition-colors ${isRevealed
-                              ? 'bg-christmas-green text-christmas-snow'
-                              : 'bg-christmas-gold/20 text-christmas-gold'
+                            ? 'bg-christmas-green text-christmas-snow'
+                            : 'bg-christmas-gold/20 text-christmas-gold'
                             }`}
                         >
                           {participant.giftNumber}
@@ -171,7 +247,7 @@ const AdminReveal = () => {
                             <>
                               <p className="font-medium">Gift #{participant.giftNumber}</p>
                               <p className="text-sm text-muted-foreground">
-                                Click to reveal recipient
+                                {revealMode === 'simple' ? 'Click to reveal' : `Click to ${revealMode}`}
                               </p>
                             </>
                           )}
@@ -181,7 +257,9 @@ const AdminReveal = () => {
                         {isRevealed ? (
                           <Eye className="w-5 h-5 text-christmas-green" />
                         ) : (
-                          <Gift className="w-5 h-5" />
+                          revealMode === 'simple' ? <Gift className="w-5 h-5" /> :
+                            revealMode === 'scratch' ? <Eraser className="w-5 h-5" /> :
+                              <Gamepad2 className="w-5 h-5" />
                         )}
                       </div>
                     </div>
@@ -196,8 +274,43 @@ const AdminReveal = () => {
           </p>
         </div>
       </div>
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-center">
+              Reveal for Gift #{selectedParticipant?.giftNumber}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            {selectedParticipant && (
+              <>
+                {revealMode === 'scratch' && (
+                  <ScratchReveal
+                    className="h-64 border-2 border-border"
+                    onReveal={handleModalReveal}
+                  >
+                    <div className="h-full flex flex-col items-center justify-center bg-card p-6 text-center">
+                      <p className="text-muted-foreground mb-2">Gift #{selectedParticipant.giftNumber} is for:</p>
+                      <h3 className="font-display text-4xl font-bold text-christmas-red animate-pulse">
+                        {selectedParticipant.assignedTo}
+                      </h3>
+                    </div>
+                  </ScratchReveal>
+                )}
+                {revealMode === 'slot' && (
+                  <SlotReveal
+                    target={selectedParticipant.assignedTo}
+                    onReveal={handleModalReveal}
+                    candidates={room.participants.map(p => p.name)}
+                  />
+                )}
+              </>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
-
 export default AdminReveal;
