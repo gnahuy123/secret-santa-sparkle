@@ -4,6 +4,10 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
+import CreateRoom from "./pages/CreateRoom";
+import RoomCreated from "./pages/RoomCreated";
+import RevealAssignment from "./pages/RevealAssignment";
+import AdminReveal from "./pages/AdminReveal";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -16,7 +20,10 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="/create" element={<CreateRoom />} />
+          <Route path="/room/:roomId" element={<RoomCreated />} />
+          <Route path="/reveal/:key" element={<RevealAssignment />} />
+          <Route path="/admin/:creatorKey" element={<AdminReveal />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
