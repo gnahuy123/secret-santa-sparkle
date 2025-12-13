@@ -5,24 +5,29 @@ import { Input } from '@/components/ui/input';
 import { Snowfall } from '@/components/Snowfall';
 import { GiftIcon } from '@/components/GiftIcon';
 import { FestiveCard } from '@/components/FestiveCard';
-import { Gift, Users, Key } from 'lucide-react';
+import { Gift, Users, Key, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const Index = () => {
   const [participantKey, setParticipantKey] = useState('');
+  const [isAdminView, setIsAdminView] = useState(false);
   const navigate = useNavigate();
 
   const handleKeySubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (participantKey.trim()) {
-      navigate(`/reveal/${participantKey.trim()}`);
+      if (isAdminView) {
+        navigate(`/admin/${participantKey.trim()}`);
+      } else {
+        navigate(`/reveal/${participantKey.trim()}`);
+      }
     }
   };
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
       <Snowfall />
-      
+
       <div className="relative z-10 container mx-auto px-4 py-8 md:py-16">
         {/* Header */}
         <div className="text-center mb-12">
@@ -63,26 +68,45 @@ const Index = () => {
           {/* Enter Key Card */}
           <FestiveCard>
             <div className="text-center">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-christmas-red/10 flex items-center justify-center">
-                <Key className="w-8 h-8 text-christmas-red" />
+              <div className={`w-16 h-16 mx-auto mb-4 rounded-full ${isAdminView ? 'bg-christmas-gold/10' : 'bg-christmas-red/10'} flex items-center justify-center transition-colors duration-300`}>
+                {isAdminView ? (
+                  <Sparkles className="w-8 h-8 text-christmas-gold" />
+                ) : (
+                  <Key className="w-8 h-8 text-christmas-red" />
+                )}
               </div>
               <h2 className="font-display text-2xl font-semibold mb-3">
-                Got a Key?
+                {isAdminView ? 'Admin Access' : 'Got a Key?'}
               </h2>
               <p className="text-muted-foreground mb-6">
-                Enter your unique key to see who you're gifting
+                {isAdminView
+                  ? 'Enter your creator key to reveal all matches'
+                  : "Enter your unique key to see who you're gifting"}
               </p>
               <form onSubmit={handleKeySubmit} className="space-y-3">
                 <Input
                   type="text"
-                  placeholder="Enter your secret key..."
+                  placeholder={isAdminView ? "Enter creator key..." : "Enter your secret key..."}
                   value={participantKey}
                   onChange={(e) => setParticipantKey(e.target.value)}
                   className="text-center"
                 />
                 <Button type="submit" variant="secondary" className="w-full" size="lg">
-                  Reveal My Match
+                  {isAdminView ? 'Open Dashboard' : 'Reveal My Match'}
                 </Button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsAdminView(!isAdminView);
+                    setParticipantKey('');
+                  }}
+                  className="text-xs text-muted-foreground hover:text-foreground underline decoration-dotted underline-offset-4 mt-4"
+                >
+                  {isAdminView
+                    ? 'Wait, I just want to find my match'
+                    : 'Are you the organizer? Manage room here'}
+                </button>
               </form>
             </div>
           </FestiveCard>
