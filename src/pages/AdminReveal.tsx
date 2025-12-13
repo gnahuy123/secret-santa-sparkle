@@ -15,14 +15,17 @@ const AdminReveal = () => {
   const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
-    if (creatorKey) {
-      const foundRoom = findRoomByCreatorKey(creatorKey);
-      if (foundRoom) {
-        setRoom(foundRoom);
-      } else {
-        setNotFound(true);
+    const loadRoom = async () => {
+      if (creatorKey) {
+        const foundRoom = await findRoomByCreatorKey(creatorKey);
+        if (foundRoom) {
+          setRoom(foundRoom);
+        } else {
+          setNotFound(true);
+        }
       }
-    }
+    };
+    loadRoom();
   }, [creatorKey]);
 
   const toggleReveal = (giftNumber: number) => {
@@ -153,10 +156,7 @@ const AdminReveal = () => {
                           {isRevealed ? (
                             <>
                               <p className="font-medium text-christmas-green">
-                                {participant.assignedTo}
-                              </p>
-                              <p className="text-sm text-muted-foreground">
-                                Gift from: {participant.name}
+                                For: {participant.assignedTo}
                               </p>
                             </>
                           ) : (

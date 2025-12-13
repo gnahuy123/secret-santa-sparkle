@@ -18,10 +18,13 @@ const RoomCreated = () => {
   const creatorKey = (location.state as { creatorKey?: string })?.creatorKey;
 
   useEffect(() => {
-    if (roomId) {
-      const foundRoom = findRoomById(roomId);
-      setRoom(foundRoom);
-    }
+    const loadRoom = async () => {
+      if (roomId) {
+        const foundRoom = await findRoomById(roomId);
+        setRoom(foundRoom);
+      }
+    };
+    loadRoom();
   }, [roomId]);
 
   const copyToClipboard = async (text: string, label: string) => {

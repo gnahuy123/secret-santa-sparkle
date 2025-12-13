@@ -14,14 +14,17 @@ const RevealAssignment = () => {
   const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
-    if (key) {
-      const result = findParticipantByKey(key);
-      if (result) {
-        setData(result);
-      } else {
-        setNotFound(true);
+    const loadData = async () => {
+      if (key) {
+        const result = await findParticipantByKey(key);
+        if (result) {
+          setData(result);
+        } else {
+          setNotFound(true);
+        }
       }
-    }
+    };
+    loadData();
   }, [key]);
 
   if (notFound) {
