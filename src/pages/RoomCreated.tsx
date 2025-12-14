@@ -47,7 +47,7 @@ const RoomCreated = () => {
     // Convert base64 data to file for checking if share is supported
     const shareData = {
       title: 'Secret Santa Assignment',
-      text: `Here is your Secret Santa Reveal Link for ${name}! 🎅`,
+      text: 'Allocations for Secret Santa are out, click on the link to get your secret santa allocation! 🎅',
       url: link
     };
 
