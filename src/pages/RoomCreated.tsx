@@ -43,13 +43,44 @@ const RoomCreated = () => {
 
   const copyShareLink = async (key: string, name: string) => {
     const link = getShareLink(key);
-    await navigator.clipboard.writeText(link);
-    setCopiedKey(key);
-    toast({
-      title: "Link Copied!",
-      description: `Share link for ${name} copied`,
-    });
-    setTimeout(() => setCopiedKey(null), 2000);
+
+    // Convert base64 data to file for checking if share is supported
+    const shareData = {
+      title: 'Secret Santa Assignment',
+      text: `Here is your Secret Santa Reveal Link for ${name}! 🎅`,
+      url: link
+    };
+
+    try {
+      if (navigator.share && navigator.canShare(shareData)) {
+        await navigator.share(shareData);
+        toast({
+          title: "Shared successfully!",
+          description: `Link for ${name} shared`,
+        });
+      } else {
+        // Fallback to clipboard
+        await navigator.clipboard.writeText(link);
+        setCopiedKey(key);
+        toast({
+          title: "Link Copied!",
+          description: `Share link for ${name} copied to clipboard`,
+        });
+        setTimeout(() => setCopiedKey(null), 2000);
+      }
+    } catch (err) {
+      // If user cancelled or share failed, fallback to clipboard just in case
+      // unless it was a user abort, but simple fallback is safer UX usually
+      if ((err as Error).name !== 'AbortError') {
+        await navigator.clipboard.writeText(link);
+        setCopiedKey(key);
+        toast({
+          title: "Link Copied!",
+          description: `Share link for ${name} copied to clipboard`,
+        });
+        setTimeout(() => setCopiedKey(null), 2000);
+      }
+    }
   };
 
   if (!room) {
@@ -69,7 +100,7 @@ const RoomCreated = () => {
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
       <Snowfall />
-      
+
       <div className="relative z-10 container mx-auto px-4 py-8 md:py-16">
         <Link
           to="/"
