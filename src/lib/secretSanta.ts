@@ -28,12 +28,12 @@ function createAssignments(names: string[]): { name: string; assignedTo: string 
   // Create a derangement (no one gets themselves)
   let shuffled: string[];
   let isValid = false;
-  
+
   while (!isValid) {
     shuffled = shuffleArray(names);
     isValid = names.every((name, i) => name !== shuffled[i]);
   }
-  
+
   return names.map((name, i) => ({
     name,
     assignedTo: shuffled![i],
@@ -43,10 +43,10 @@ function createAssignments(names: string[]): { name: string; assignedTo: string 
 export async function createRoom(names: string[]): Promise<Room> {
   const assignments = createAssignments(names);
   const giftNumbers = shuffleArray([...Array(names.length)].map((_, i) => i + 1));
-  
+
   const roomCode = nanoid(10);
   const creatorKey = nanoid(12);
-  
+
   // Insert room into Supabase
   const { data: roomData, error: roomError } = await supabase
     .from('rooms')
@@ -56,16 +56,16 @@ export async function createRoom(names: string[]): Promise<Room> {
     })
     .select()
     .single();
-  
+
   if (roomError) throw roomError;
-  
+
   const participants: Participant[] = assignments.map((a, i) => ({
     name: a.name,
     key: nanoid(8),
     assignedTo: a.assignedTo,
     giftNumber: giftNumbers[i],
   }));
-  
+
   // Insert participants into Supabase
   const participantsToInsert = participants.map(p => ({
     room_id: roomData.id,
@@ -74,13 +74,13 @@ export async function createRoom(names: string[]): Promise<Room> {
     assigned_to: p.assignedTo,
     gift_number: p.giftNumber,
   }));
-  
+
   const { error: participantsError } = await supabase
     .from('participants')
     .insert(participantsToInsert);
-  
+
   if (participantsError) throw participantsError;
-  
+
   return {
     id: roomCode,
     creatorKey,
@@ -98,38 +98,47 @@ export async function findParticipantByKey(key: string): Promise<{ room: Room; p
     `)
     .eq('participant_key', key)
     .maybeSingle();
-  
-  if (participantError || !participantData) return null;
-  
+
+  if (participantError || !participantData) {
+    console.error('Error finding participant:', participantError);
+    return null;
+  }
+
   const roomInfo = participantData.rooms as any;
-  
+
   // Fetch all participants for this room
-  const { data: allParticipants } = await supabase
+  const { data: allParticipants, error: participantsError } = await supabase
     .from('participants')
     .select('*')
     .eq('room_id', roomInfo.id);
-  
+
+  if (participantsError) {
+    console.error('Error fetching room participants:', participantsError);
+  }
+
   const participants: Participant[] = (allParticipants || []).map(p => ({
     name: p.name,
     key: p.participant_key,
     assignedTo: p.assigned_to,
     giftNumber: p.gift_number,
   }));
-  
+
   const room: Room = {
     id: roomInfo.room_code,
     creatorKey: roomInfo.creator_key,
     participants,
     createdAt: new Date(roomInfo.created_at).getTime(),
   };
-  
+
   const participant: Participant = {
     name: participantData.name,
     key: participantData.participant_key,
     assignedTo: participantData.assigned_to,
     giftNumber: participantData.gift_number,
   };
-  
+
+  console.log('Found participant data:', { room, participant });
+
   return { room, participant };
 }
 
@@ -139,21 +148,21 @@ export async function findRoomByCreatorKey(creatorKey: string): Promise<Room | n
     .select('*')
     .eq('creator_key', creatorKey)
     .maybeSingle();
-  
+
   if (error || !roomData) return null;
-  
+
   const { data: participantsData } = await supabase
     .from('participants')
     .select('*')
     .eq('room_id', roomData.id);
-  
+
   const participants: Participant[] = (participantsData || []).map(p => ({
     name: p.name,
     key: p.participant_key,
     assignedTo: p.assigned_to,
     giftNumber: p.gift_number,
   }));
-  
+
   return {
     id: roomData.room_code,
     creatorKey: roomData.creator_key,
@@ -168,21 +177,21 @@ export async function findRoomById(roomId: string): Promise<Room | null> {
     .select('*')
     .eq('room_code', roomId)
     .maybeSingle();
-  
+
   if (error || !roomData) return null;
-  
+
   const { data: participantsData } = await supabase
     .from('participants')
     .select('*')
     .eq('room_id', roomData.id);
-  
+
   const participants: Participant[] = (participantsData || []).map(p => ({
     name: p.name,
     key: p.participant_key,
     assignedTo: p.assigned_to,
     giftNumber: p.gift_number,
   }));
-  
+
   return {
     id: roomData.room_code,
     creatorKey: roomData.creator_key,
