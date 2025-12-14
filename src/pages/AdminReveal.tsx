@@ -26,7 +26,7 @@ const AdminReveal = () => {
   const [allRevealed, setAllRevealed] = useState(false);
   const [notFound, setNotFound] = useState(false);
 
-  const [revealMode, setRevealMode] = useState<RevealMode>('simple');
+  const [revealMode, setRevealMode] = useState<RevealMode>('slot');
   const [selectedParticipant, setSelectedParticipant] = useState<Participant | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 

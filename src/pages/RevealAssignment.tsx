@@ -17,7 +17,7 @@ const RevealAssignment = () => {
   const [data, setData] = useState<{ room: Room; participant: Participant } | null>(null);
   const [revealed, setRevealed] = useState(false);
   const [notFound, setNotFound] = useState(false);
-  const [revealMode, setRevealMode] = useState<RevealMode>('simple');
+  const [revealMode, setRevealMode] = useState<RevealMode>('slot');
 
   useEffect(() => {
     const loadData = async () => {
