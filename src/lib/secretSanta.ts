@@ -100,7 +100,6 @@ export async function findParticipantByKey(key: string): Promise<{ room: Room; p
     .maybeSingle();
 
   if (participantError || !participantData) {
-    console.error('Error finding participant:', participantError);
     return null;
   }
 
@@ -113,7 +112,7 @@ export async function findParticipantByKey(key: string): Promise<{ room: Room; p
     .eq('room_id', roomInfo.id);
 
   if (participantsError) {
-    console.error('Error fetching room participants:', participantsError);
+    // silently fail fetching other participants if that's the only issue
   }
 
   const participants: Participant[] = (allParticipants || []).map(p => ({
@@ -137,7 +136,7 @@ export async function findParticipantByKey(key: string): Promise<{ room: Room; p
     giftNumber: participantData.gift_number,
   };
 
-  console.log('Found participant data:', { room, participant });
+
 
   return { room, participant };
 }

@@ -21,19 +21,15 @@ const RevealAssignment = () => {
 
   useEffect(() => {
     const loadData = async () => {
-      console.log('RevealAssignment: Check key', key);
       if (key) {
         try {
           const result = await findParticipantByKey(key);
           if (result) {
-            console.log('RevealAssignment: Data found', result);
             setData(result);
           } else {
-            console.warn('RevealAssignment: Key not found or error');
             setNotFound(true);
           }
         } catch (error) {
-          console.error('RevealAssignment: Error loading data', error);
           setNotFound(true);
         }
       }
