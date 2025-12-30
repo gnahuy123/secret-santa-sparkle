@@ -1,5 +1,7 @@
 title: Secret Santa Sparkle
 description: A magical, interactive Secret Santa generator
+url: "https://gnahuy123.github.io"
+baseurl: "/secret-santa-sparkle"
 theme: minima
 plugins:
   - jekyll-feed

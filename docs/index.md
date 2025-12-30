@@ -29,6 +29,6 @@ We believe your holiday tool should be as fun as the event itself!
 2.  **Share Links**: Each person gets a unique link.
 3.  **Reveal**: Participants reveal their match using fun, interactive modes!
 
-![Room Creation Video](./assets/videos/setup_flow.webp)
+![Room Creation Video]({{ site.baseurl }}/assets/videos/walk_through.gif)
 
 [Learn about Reveal Modes](./reveal-modes.html)

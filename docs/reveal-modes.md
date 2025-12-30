@@ -12,13 +12,13 @@ Secret Santa Sparkle offers multiple ways to reveal your match, making the momen
 
 For the thrill-seekers! Watch the names spin until your match lands.
 
-![Slot Reveal Mode](./assets/videos/slot_reveal.webp)
+![Slot Reveal Mode]({{ site.baseurl }}/assets/videos/slot-reveal.gif)
 
 ## 🎫 Scratch Card Mode
 
 For a classic feel. Use your mouse (or finger on mobile) to scratch away the snowy layer and reveal the name underneath.
 
-![Scratch Reveal Mode](./assets/videos/scratch_reveal.webp)
+![Scratch Reveal Mode]({{ site.baseurl }}/assets/videos/scratch-reveal.gif)
 
 ## ✨ Simple Mode
 
