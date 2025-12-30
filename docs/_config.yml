@@ -1,0 +1,6 @@
+title: Secret Santa Sparkle
+description: A magical, interactive Secret Santa generator
+theme: minima
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
