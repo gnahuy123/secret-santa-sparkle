@@ -20,8 +20,8 @@ We believe your holiday tool should be as fun as the event itself!
 
 | I am a... | View Guide |
 | :--- | :--- |
-| **Room Creator** | [**Creator Workflow**](./creator-guide.html) - Setup your group in seconds. |
-| **Participant** | [**Friend's Workflow**](./participant-guide.html) - Check your match and have fun! |
+| **Room Creator** | [**Creator Workflow**]({{ site.baseurl }}/creator-guide/) - Setup your group in seconds. |
+| **Participant** | [**Friend's Workflow**]({{ site.baseurl }}/participant-guide/) - Check your match and have fun! |
 
 ## Quick How-To
 
@@ -31,4 +31,4 @@ We believe your holiday tool should be as fun as the event itself!
 
 ![Room Creation Video]({{ site.baseurl }}/assets/videos/walk_through.gif)
 
-[Learn about Reveal Modes](./reveal-modes.html)
+[Learn about Reveal Modes]({{ site.baseurl }}/reveal-modes/)
